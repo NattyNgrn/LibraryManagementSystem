@@ -37,4 +37,44 @@ app.get("/books", async (req, res) => {
     }
 });
 
+//write a post method to add a book
+app.post("/addbook", async (req, res) => {
+    try {
+        const { title, author, year } = req.body;
+        const result = await DB.query("INSERT INTO books (title, author, year) VALUES ($1, $2, $3) RETURNING *", [title, author, year]);
+        console.log(`Added book: ${result.rows[0].title}`);
+        res.send(result.rows[0]);
+    } catch(error) {
+        console.log(error);
+        return res.status(400).json({error});
+    }
+});
+
+//write a delete method to delete a book
+app.delete("/deletebook/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const result = await DB.query("DELETE FROM books WHERE id = $1 RETURNING *", [id]);
+        console.log(`Deleted book: ${result.rows[0].title}`);
+        res.send(result.rows[0]);
+    } catch(error) {
+        console.log(error);
+        return res.status(400).json({error});
+    }
+});
+
+//write a put method to update a book
+app.put("/updatebook/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { title, author, year } = req.body;
+        const result = await DB.query("UPDATE books SET title = $1, author = $2, year = $3 WHERE id = $4 RETURNING *", [title, author, year, id]);
+        console.log(`Updated book: ${result.rows[0].title}`);
+        res.sendStatus(200);
+    } catch(error) {
+        console.log(error);
+        return res.status(400).json({error});
+    }
+});
+
 app.listen(port, () => console.log(`listening at http://localhost:${port}`));
