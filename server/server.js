@@ -43,7 +43,7 @@ app.post("/addbook", async (req, res) => {
         const { title, author, year } = req.body;
         const result = await DB.query("INSERT INTO books (title, author, year) VALUES ($1, $2, $3) RETURNING *", [title, author, year]);
         console.log(`Added book: ${result.rows[0].title}`);
-        res.send(result.rows[0]);
+        res.sendStatus(200);
     } catch(error) {
         console.log(error);
         return res.status(400).json({error});
@@ -56,7 +56,7 @@ app.delete("/deletebook/:id", async (req, res) => {
         const id = req.params.id;
         const result = await DB.query("DELETE FROM books WHERE id = $1 RETURNING *", [id]);
         console.log(`Deleted book: ${result.rows[0].title}`);
-        res.send(result.rows[0]);
+        res.sendStatus(200);
     } catch(error) {
         console.log(error);
         return res.status(400).json({error});
